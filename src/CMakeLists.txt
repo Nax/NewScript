@@ -1,0 +1,2 @@
+add_subdirectory(libnewscript)
+add_subdirectory(newscript)
