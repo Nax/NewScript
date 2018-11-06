@@ -29,15 +29,11 @@ static NsToken* _tokenBasic(NsTokenType type)
     return tok;
 }
 
-static NsToken* _tokenString(NsTokenType type, const char* buffer, size_t len)
+static NsToken* _tokenString(NsTokenType type, const char* buffer, size_t size)
 {
     NsToken* tok;
-    tok = malloc(sizeof(*tok));
-    tok->str.data = malloc(len + 1);
-    memcpy(tok->str.data, buffer, len);
-    tok->str.data[len] = 0;
-    tok->str.len = len;
-    tok->type = type;
+    tok = _tokenBasic(type);
+    nsBlobInitMemory(&tok->str, buffer,  size);
     return tok;
 }
 
@@ -78,6 +74,9 @@ static NsToken* _lexSymbols(NsLexer* lexer)
     MATCH_SYMBOL("{", NS_TOKEN_LBRACE);
     MATCH_SYMBOL("}", NS_TOKEN_RBRACE);
     MATCH_SYMBOL(".", NS_TOKEN_DOT);
+    MATCH_SYMBOL(",", NS_TOKEN_COMMA);
+    MATCH_SYMBOL(":", NS_TOKEN_COLON);
+    MATCH_SYMBOL(";", NS_TOKEN_SEMICOLON);
     return tok;
 }
 
@@ -157,7 +156,7 @@ void nsFreeToken(NsToken* token)
         {
         case NS_TOKEN_IDENTIFIER:
         case NS_TOKEN_STRING:
-            free(token->str.data);
+            nsBlobFree(&token->str);
             break;
         default:
             break;

@@ -2,6 +2,7 @@
 #define LEXER_H
 
 #include <stddef.h>
+#include <libnewscript/blob.h>
 
 typedef enum {
     NS_TOKEN_EOF,
@@ -10,19 +11,17 @@ typedef enum {
     NS_TOKEN_LBRACE,
     NS_TOKEN_RBRACE,
     NS_TOKEN_DOT,
+    NS_TOKEN_COMMA,
+    NS_TOKEN_COLON,
+    NS_TOKEN_SEMICOLON,
     NS_TOKEN_IDENTIFIER,
     NS_TOKEN_STRING
 } NsTokenType;
 
 typedef struct {
-    char*   data;
-    size_t  len;
-} NsTokenString;
-
-typedef struct {
-    NsTokenType         type;
+    NsTokenType     type;
     union {
-        NsTokenString   str;
+        NsBlob      str;
     };
 } NsToken;
 
