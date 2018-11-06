@@ -17,19 +17,27 @@ typedef struct {
 } NsAstRoot;
 
 typedef struct {
-    
-} NsAstIdentifier;
+    NsBlob  name;
+} NsAstExprIdentifier;
 
 typedef struct {
-    char*   data;
-    size_t  len;
-} NsAstProperty;
+    NsAstNode*  expr;
+    NsBlob      name;
+} NsAstExprProperty;
+
+typedef struct {
+    size_t      argCount;
+    NsAstNode*  function;
+    NsAstNode** args;
+} NsAstExprCall;
 
 typedef struct {
     NsAstType type;
     union {
         NsAstRoot           root;
-        NsAstIdentifier     identifier;
+        NsAstExprIdentifier identifier;
+        NsAstExprProperty   property;
+        NsAstExprCall       call;
     };
 } NsAstNode;
 
