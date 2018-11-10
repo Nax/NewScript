@@ -12,6 +12,8 @@ typedef enum {
     NS_AST_EXPR_CALL
 } NsAstType;
 
+typedef struct NsAstNode_ NsAstNode;
+
 typedef struct {
 
 } NsAstRoot;
@@ -31,7 +33,7 @@ typedef struct {
     NsAstNode** args;
 } NsAstExprCall;
 
-typedef struct {
+struct NsAstNode_ {
     NsAstType type;
     union {
         NsAstRoot           root;
@@ -39,7 +41,7 @@ typedef struct {
         NsAstExprProperty   property;
         NsAstExprCall       call;
     };
-} NsAstNode;
+};
 
 NsAstNode*  nsCreateAstRoot(void);
 void        nsDestroyAstNode(NsAstNode* node);
