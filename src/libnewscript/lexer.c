@@ -2,6 +2,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <libnewscript/lexer.h>
+#include <libnewscript/bytecode/builder.h>
 
 #include <stdio.h>
 
@@ -185,4 +186,27 @@ void nsDebugLex(const char* buffer, size_t length)
         nsFreeToken(tok);
     }
     nsDestroyLexer(lexer);
+
+    printf("\n");
+
+    NsBytecodeBuilder* builder = nsCreateBytecodeBuilder();
+
+    nsEmitBytecode8(builder, 0x40);
+    nsEmitBytecodeReg(builder, 12);
+    nsEmitBytecode32(builder, 0x12345678);
+
+    nsEmitBytecode8(builder, 0x40);
+    nsEmitBytecodeReg(builder, 10000);
+    nsEmitBytecode32(builder, 0xffeeddcc);
+
+    nsEmitBytecode8(builder, 0x40);
+    nsEmitBytecodeReg(builder, 127);
+    nsEmitBytecode32(builder, 0x127);
+
+    nsEmitBytecode8(builder, 0x40);
+    nsEmitBytecodeReg(builder, 128);
+    nsEmitBytecode32(builder, 0x128);
+
+    nsDumpBytecode(builder);
+    nsDestroyBytecodeBuilder(builder);
 }
