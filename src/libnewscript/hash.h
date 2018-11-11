@@ -16,7 +16,7 @@ typedef struct {
 
 NsStringMap32*  nsCreateStringMap32(void);
 void            nsDestroyStringMap32(NsStringMap32* strMap);
-uint32_t        nsGetStringMap32(const NsStringMap32* strMap, const char* key);
+int             nsGetStringMap32(uint32_t* dst, const NsStringMap32* strMap, const char* key);
 void            nsSetStringMap32(NsStringMap32* strMap, const char* key, uint32_t value);
 
 #endif

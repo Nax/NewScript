@@ -45,7 +45,7 @@ void nsDestroyStringMap32(NsStringMap32* strMap)
     free(strMap);
 }
 
-uint32_t nsGetStringMap32(const NsStringMap32* strMap, const char* key)
+int nsGetStringMap32(uint32_t* dst, const NsStringMap32* strMap, const char* key)
 {
     uint64_t hash = nsHashString(key);
     size_t slot = hash & (strMap->bucketCapacity - 1);
@@ -57,7 +57,10 @@ uint32_t nsGetStringMap32(const NsStringMap32* strMap, const char* key)
 
         uint32_t index = strMap->buckets[slot];
         if (strcmp(key, strMap->keys[index]) == 0)
-            return strMap->values[index];
+        {
+            *dst = strMap->values[index];
+            return 1;
+        }
 
         slot = (slot + 1) & (strMap->bucketCapacity - 1);
     }

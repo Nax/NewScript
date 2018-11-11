@@ -193,7 +193,11 @@ void nsDebugLex(const char* buffer, size_t length)
 
     nsEmitBytecode8(builder, 0x40);
     nsEmitBytecodeReg(builder, 12);
-    nsEmitBytecode32(builder, 0x12345678);
+    nsEmitBytecodeRel32(builder, "Console");
+
+    nsEmitBytecode8(builder, 0x40);
+    nsEmitBytecodeReg(builder, 0);
+    nsEmitBytecodeRel32(builder, "Foo");
 
     nsEmitBytecode8(builder, 0x40);
     nsEmitBytecodeReg(builder, 10000);
