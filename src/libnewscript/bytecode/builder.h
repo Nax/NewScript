@@ -3,38 +3,19 @@
 
 #include <stddef.h>
 #include <stdint.h>
-
-#define NS_REL_NONE     0
-#define NS_REL_STRING   1
+#include <libnewscript/bytecode/bytecode.h>
 
 typedef struct {
-    uint32_t    offset;
-    uint32_t    length;
-} NsBytecodeStr;
-
-typedef struct {
-    uint32_t    offset;
-    uint32_t    index;
-    uint8_t     type;
-} NsBytecodeRel;
-
-typedef struct {
-    size_t              codeSize;
-    size_t              codeCapacity;
-    char*               code;
-    size_t              strTableHeaderSize;
-    size_t              strTableHeaderCapacity;
-    NsBytecodeStr*      strTableHeader;
-    size_t              strTableSize;
-    size_t              strTableCapacity;
-    char*               strTable;
-    size_t              relTableSize;
-    size_t              relTableCapacity;
-    NsBytecodeRel*      relTable;
+    NsBytecode* bc;
+    size_t      codeCapacity;
+    size_t      strTableHeaderCapacity;
+    size_t      strTableCapacity;
+    size_t      relTableCapacity;
 } NsBytecodeBuilder;
 
 NsBytecodeBuilder*  nsCreateBytecodeBuilder(void);
 void                nsDestroyBytecodeBuilder(NsBytecodeBuilder* builder);
+NsBytecode*         nsExtractBytecode(NsBytecodeBuilder* builder);
 
 void    nsEmitBytecode8(NsBytecodeBuilder* builder, uint8_t value);
 void    nsEmitBytecode16(NsBytecodeBuilder* builder, uint16_t value);
@@ -45,7 +26,5 @@ void    nsEmitBytecodeString(NsBytecodeBuilder* builder, const char* str, size_t
 void    nsEmitBytecodeStringC(NsBytecodeBuilder* builder, const char* str);
 
 uint32_t nsBytecodeInternString(NsBytecodeBuilder* builder, const char* str, size_t length);
-
-void    nsDumpBytecode(NsBytecodeBuilder* builder);
 
 #endif

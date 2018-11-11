@@ -146,6 +146,7 @@ static void parseLoop(NsParser* parser)
 
 void nsParse(const char* data, size_t len)
 {
+    NsBytecode* bc;
     NsParser parser;
     parser.lexer = nsCreateLexer(data, len);
     parser.builder = nsCreateBytecodeBuilder();
@@ -153,6 +154,8 @@ void nsParse(const char* data, size_t len)
     parser.reg = 0;
     parseLoop(&parser);
     nsDestroyLexer(parser.lexer);
-    nsDumpBytecode(parser.builder);
-    nsDestroyBytecodeBuilder(parser.builder);
+
+    bc = nsExtractBytecode(parser.builder);
+    nsDumpBytecode(bc);
+    nsDestroyBytecode(bc);
 }
