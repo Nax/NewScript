@@ -9,6 +9,6 @@
 # define NEWSCRIPT_API
 #endif
 
-void nsDebugLex(const char* buffer, size_t length);
+void nsParse(const char* data, size_t len);
 
 #endif

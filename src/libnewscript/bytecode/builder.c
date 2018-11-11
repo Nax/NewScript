@@ -143,6 +143,7 @@ uint32_t nsBytecodeInternString(NsBytecodeBuilder* builder, const char* str, siz
 
 void nsDumpBytecode(NsBytecodeBuilder* builder)
 {
+    size_t nameLen;
     size_t cursor = 0;
     size_t relCursor = 0;
     uint8_t enc;
@@ -162,6 +163,7 @@ void nsDumpBytecode(NsBytecodeBuilder* builder)
         op = builder->code[cursor++];
         opData = nsOps + op;
         printf("%s", opData->name);
+        nameLen = strlen(opData->name);
 
         for (size_t i = 0; i < 3; ++i)
         {
@@ -169,7 +171,12 @@ void nsDumpBytecode(NsBytecodeBuilder* builder)
             if (enc == NS_ENC_NONE)
                 break;
             if (i == 0)
-                printf("    ");
+            {
+                for (size_t j = 0; j < 12 - nameLen; ++j)
+                {
+                    putchar(' ');
+                }
+            }
             else
                 printf(", ");
 

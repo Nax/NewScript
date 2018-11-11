@@ -15,7 +15,7 @@ int main(int argc, char** argv)
     buf = malloc(len);
     fread(buf, len, 1, file);
     fclose(file);
-    nsDebugLex(buf, len);
+    nsParse(buf, len);
     free(buf);
     return 0;
 }

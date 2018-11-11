@@ -186,43 +186,4 @@ void nsDebugLex(const char* buffer, size_t length)
         nsFreeToken(tok);
     }
     nsDestroyLexer(lexer);
-
-    printf("\n");
-
-    NsBytecodeBuilder* builder = nsCreateBytecodeBuilder();
-
-    nsEmitBytecode8(builder, 0x40);
-    nsEmitBytecodeReg(builder, 12);
-    nsEmitBytecodeStringC(builder, "Console");
-
-    nsEmitBytecode8(builder, 0x40);
-    nsEmitBytecodeReg(builder, 0);
-    nsEmitBytecodeStringC(builder, "Foo");
-
-    nsEmitBytecode8(builder, 0x40);
-    nsEmitBytecodeReg(builder, 10000);
-    nsEmitBytecode64(builder, 0xffeeddcc);
-
-    nsEmitBytecode8(builder, 0x40);
-    nsEmitBytecodeReg(builder, 127);
-    nsEmitBytecode64(builder, 0x127);
-
-    nsEmitBytecode8(builder, 0x40);
-    nsEmitBytecodeReg(builder, 12345);
-    nsEmitBytecodeStringC(builder, "Console");
-
-    nsEmitBytecode8(builder, 0x40);
-    nsEmitBytecodeReg(builder, 12345);
-    nsEmitBytecodeStringC(builder, "Console");
-
-    nsEmitBytecode8(builder, 0x40);
-    nsEmitBytecodeReg(builder, 12345);
-    nsEmitBytecodeStringC(builder, "Console");
-
-    nsEmitBytecode8(builder, 0x40);
-    nsEmitBytecodeReg(builder, 128);
-    nsEmitBytecode64(builder, 0x128);
-
-    nsDumpBytecode(builder);
-    nsDestroyBytecodeBuilder(builder);
 }

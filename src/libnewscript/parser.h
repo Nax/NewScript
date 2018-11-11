@@ -1,15 +1,16 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include <libnewscript/ast.h>
+#include <libnewscript/bytecode/builder.h>
 #include <libnewscript/lexer.h>
 
 typedef struct {
-    NsAstNode*  ast;
-    NsLexer*    lexer;
-    NsToken*    lookahead;
+    NsBytecodeBuilder*  builder;
+    NsLexer*            lexer;
+    NsToken*            lookahead;
+    uint16_t            reg;
 } NsParser;
 
-NsAstNode* nsParse(const char* data, size_t len);
+void nsParse(const char* data, size_t len);
 
 #endif
