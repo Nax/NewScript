@@ -30,7 +30,24 @@ static int acceptImmediate(NsParser* parser, NsTokenType type)
     return 1;
 }
 
-static int parseExpr(NsParser* parser)
+static int parseExprLiteralString(uint16_t* dst, NsParser* parser)
+{
+    NsToken* tok;
+    uint16_t reg;
+
+    tok = accept(parser, NS_TOKEN_STRING);
+    if (!tok)
+        return 0;
+    reg = parser->reg++;
+    nsEmitBytecode8(parser->builder, NS_OP_LOADI);
+    nsEmitBytecodeReg(parser->builder, reg);
+    nsEmitBytecodeString(parser->builder, tok->str.data, tok->str.size);
+    nsFreeToken(tok);
+    *dst = reg;
+    return 1;
+}
+
+static int parseExprIdentifier(uint16_t* dst, NsParser* parser)
 {
     NsToken* tok;
     uint16_t reg;
@@ -43,6 +60,24 @@ static int parseExpr(NsParser* parser)
     nsEmitBytecodeReg(parser->builder, reg);
     nsEmitBytecodeString(parser->builder, tok->str.data, tok->str.size);
     nsFreeToken(tok);
+    *dst = reg;
+    return 1;
+}
+
+static int parseExpr(uint16_t* dst, NsParser* parser)
+{
+    NsToken* tok;
+    uint16_t tmp;
+    uint16_t reg;
+    uint16_t args[256];
+    uint8_t argCount;
+    int ret;
+
+    ret = parseExprIdentifier(&reg, parser);
+    if (!ret)
+        ret = parseExprLiteralString(&reg, parser);
+    if (!ret)
+        return 0;
 
     for (;;)
     {
@@ -55,15 +90,46 @@ static int parseExpr(NsParser* parser)
             nsEmitBytecodeString(parser->builder, tok->str.data, tok->str.size);
             nsFreeToken(tok);
         }
+        else if(acceptImmediate(parser, NS_TOKEN_LPAREN))
+        {
+            argCount = 0;
+            if (parseExpr(&tmp, parser))
+            {
+                args[0] = tmp;
+                argCount = 1;
+
+                for (;;)
+                {
+                    if (acceptImmediate(parser, NS_TOKEN_COMMA))
+                    {
+                        parseExpr(&tmp, parser);
+                        args[argCount++] = tmp;
+                    }
+                    else
+                        break;
+                }
+            }
+            acceptImmediate(parser, NS_TOKEN_RPAREN);
+            if (argCount == 0)
+                args[0] = parser->reg++;
+            nsEmitBytecode8(parser->builder, NS_OP_CALL);
+            nsEmitBytecodeReg(parser->builder, reg);
+            nsEmitBytecodeReg(parser->builder, args[0]);
+            nsEmitBytecode8(parser->builder, argCount);
+            reg = args[0];
+        }
         else
             break;
     }
+    *dst = reg;
     return 1;
 }
 
 static int parseStatement(NsParser* parser)
 {
-    parseExpr(parser);
+    uint16_t dummy;
+
+    parseExpr(&dummy, parser);
     return acceptImmediate(parser, NS_TOKEN_SEMICOLON);
 }
 

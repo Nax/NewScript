@@ -12,7 +12,7 @@ NsBytecodeBuilder* nsCreateBytecodeBuilder(void)
     builder->code = malloc(builder->codeCapacity);
     builder->strTableHeaderSize = 0;
     builder->strTableHeaderCapacity = 8;
-    builder->strTableHeader = malloc(builder->strTableHeaderCapacity);
+    builder->strTableHeader = malloc(sizeof(*builder->strTableHeader) * builder->strTableHeaderCapacity);
     builder->strTableSize = 0;
     builder->strTableCapacity = 64;
     builder->strTable = malloc(builder->strTableCapacity);
@@ -129,7 +129,7 @@ uint32_t nsBytecodeInternString(NsBytecodeBuilder* builder, const char* str, siz
     if (builder->strTableHeaderSize == builder->strTableHeaderCapacity)
     {
         newCapacity = builder->strTableHeaderCapacity + builder->strTableHeaderCapacity / 2;
-        builder->strTableHeader = realloc(builder->strTableHeader, newCapacity);
+        builder->strTableHeader = realloc(builder->strTableHeader, newCapacity * sizeof(*builder->strTableHeader));
         builder->strTableHeaderCapacity = newCapacity;
     }
 
@@ -173,9 +173,7 @@ void nsDumpBytecode(NsBytecodeBuilder* builder)
             if (i == 0)
             {
                 for (size_t j = 0; j < 12 - nameLen; ++j)
-                {
                     putchar(' ');
-                }
             }
             else
                 printf(", ");

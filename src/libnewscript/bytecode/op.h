@@ -10,10 +10,12 @@
 #define NS_ENC_IMM64    4
 #define NS_ENC_REG      5
 
+#define NS_OP_LOADI     0x22
 #define NS_OP_GGET      0x40
 #define NS_OP_GET       0x41
 #define NS_OP_GGETI     0x44
 #define NS_OP_GETI      0x45
+#define NS_OP_CALL      0x60
 
 typedef struct {
     const char*     name;
