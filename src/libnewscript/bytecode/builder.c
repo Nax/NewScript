@@ -10,10 +10,12 @@ NsBytecodeBuilder* nsCreateBytecodeBuilder(void)
     builder->codeSize = 0;
     builder->codeCapacity = 128;
     builder->code = malloc(builder->codeCapacity);
+    builder->strTableHeaderSize = 0;
+    builder->strTableHeaderCapacity = 8;
+    builder->strTableHeader = malloc(builder->strTableHeaderCapacity);
     builder->strTableSize = 0;
     builder->strTableCapacity = 64;
     builder->strTable = malloc(builder->strTableCapacity);
-    builder->strTableMap = nsCreateStringMap32();
     builder->relTableSize = 0;
     builder->relTableCapacity = 8;
     builder->relTable = malloc(sizeof(*builder->relTable) * builder->relTableCapacity);
@@ -23,8 +25,8 @@ NsBytecodeBuilder* nsCreateBytecodeBuilder(void)
 void nsDestroyBytecodeBuilder(NsBytecodeBuilder* builder)
 {
     free(builder->code);
+    free(builder->strTableHeader);
     free(builder->strTable);
-    nsDestroyStringMap32(builder->strTableMap);
     free(builder->relTable);
     free(builder);
 }
@@ -71,28 +73,13 @@ void nsEmitBytecodeReg(NsBytecodeBuilder* builder, uint16_t value)
     }
 }
 
-void nsEmitBytecodeRel32(NsBytecodeBuilder* builder, const char* str)
+void nsEmitBytecodeString(NsBytecodeBuilder* builder, const char* str, size_t length)
 {
     uint32_t strIndex;
     uint32_t relIndex;
     size_t newCapacity;
-    size_t len;
 
-    if (!nsGetStringMap32(&strIndex, builder->strTableMap, str))
-    {
-        len = strlen(str);
-        strIndex = builder->strTableSize;
-        if (len + builder->strTableSize + 1 > builder->strTableCapacity)
-        {
-            newCapacity = builder->strTableCapacity + builder->strTableCapacity / 2;
-            builder->strTable = realloc(builder->strTable, newCapacity);
-            builder->strTableCapacity = newCapacity;
-        }
-        memcpy(builder->strTable + builder->strTableSize, str, len);
-        builder->strTable[builder->strTableSize + len] = 0;
-        builder->strTableSize += (len + 1);
-        nsSetStringMap32(builder->strTableMap, str, strIndex);
-    }
+    strIndex = nsBytecodeInternString(builder, str, length);
     if (builder->relTableSize == builder->relTableCapacity)
     {
         newCapacity = builder->relTableCapacity + builder->relTableCapacity / 2;
@@ -101,9 +88,57 @@ void nsEmitBytecodeRel32(NsBytecodeBuilder* builder, const char* str)
     }
     relIndex = builder->relTableSize;
     builder->relTable[relIndex].offset = builder->codeSize;
-    builder->relTable[relIndex].strIndex = strIndex;
+    builder->relTable[relIndex].index = strIndex;
+    builder->relTable[relIndex].type = NS_REL_STRING;
     builder->relTableSize++;
-    nsEmitBytecode32(builder, 0);
+    nsEmitBytecode64(builder, 0);
+}
+
+void nsEmitBytecodeStringC(NsBytecodeBuilder* builder, const char* str)
+{
+    nsEmitBytecodeString(builder, str, strlen(str));
+}
+
+uint32_t nsBytecodeInternString(NsBytecodeBuilder* builder, const char* str, size_t length)
+{
+    size_t newCapacity;
+    uint32_t offset;
+    uint32_t index;
+
+    for (size_t i = 0; i < builder->strTableHeaderSize; ++i)
+    {
+        if (builder->strTableHeader[i].length != length)
+            continue;
+
+        if (memcmp(str, builder->strTable + builder->strTableHeader[i].offset, length) == 0)
+            return (uint32_t)i;
+    }
+
+    while (length + builder->strTableSize + 1 > builder->strTableCapacity)
+    {
+        newCapacity = builder->strTableCapacity + builder->strTableCapacity / 2;
+        builder->strTable = realloc(builder->strTable, newCapacity);
+        builder->strTableCapacity = newCapacity;
+    }
+
+    offset = builder->strTableSize;
+    memcpy(builder->strTable + offset, str, length);
+    builder->strTable[offset + length] = 0;
+    builder->strTableSize += (length + 1);
+
+    if (builder->strTableHeaderSize == builder->strTableHeaderCapacity)
+    {
+        newCapacity = builder->strTableHeaderCapacity + builder->strTableHeaderCapacity / 2;
+        builder->strTableHeader = realloc(builder->strTableHeader, newCapacity);
+        builder->strTableHeaderCapacity = newCapacity;
+    }
+
+    index = builder->strTableHeaderSize;
+    builder->strTableHeader[index].offset = offset;
+    builder->strTableHeader[index].length = (uint32_t)length;
+    builder->strTableHeaderSize += 1;
+
+    return index;
 }
 
 void nsDumpBytecode(NsBytecodeBuilder* builder)
@@ -140,9 +175,10 @@ void nsDumpBytecode(NsBytecodeBuilder* builder)
 
             if (relCursor < builder->relTableSize && builder->relTable[relCursor].offset == cursor)
             {
-                tmp32 = builder->relTable[relCursor++].strIndex;
-                printf("#%s", builder->strTable + tmp32);
-                cursor += 4;
+                tmp32 = builder->relTable[relCursor++].index;
+                tmp32 = builder->strTableHeader[tmp32].offset;
+                printf("\"%s\"", builder->strTable + tmp32);
+                cursor += 8;
                 continue;
             }
 

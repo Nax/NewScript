@@ -65,7 +65,7 @@ const NsOp nsOps[256] = {
     { "UNDEF(3d)", { NS_ENC_NONE, NS_ENC_NONE, NS_ENC_NONE } },
     { "UNDEF(3e)", { NS_ENC_NONE, NS_ENC_NONE, NS_ENC_NONE } },
     { "UNDEF(3f)", { NS_ENC_NONE, NS_ENC_NONE, NS_ENC_NONE } },
-    { "GET", { NS_ENC_REG, NS_ENC_IMM32, NS_ENC_NONE } },
+    { "GET", { NS_ENC_REG, NS_ENC_IMM64, NS_ENC_NONE } },
     { "SGET", { NS_ENC_NONE, NS_ENC_NONE, NS_ENC_NONE } },
     { "UNDEF(42)", { NS_ENC_NONE, NS_ENC_NONE, NS_ENC_NONE } },
     { "UNDEF(43)", { NS_ENC_NONE, NS_ENC_NONE, NS_ENC_NONE } },

@@ -193,23 +193,35 @@ void nsDebugLex(const char* buffer, size_t length)
 
     nsEmitBytecode8(builder, 0x40);
     nsEmitBytecodeReg(builder, 12);
-    nsEmitBytecodeRel32(builder, "Console");
+    nsEmitBytecodeStringC(builder, "Console");
 
     nsEmitBytecode8(builder, 0x40);
     nsEmitBytecodeReg(builder, 0);
-    nsEmitBytecodeRel32(builder, "Foo");
+    nsEmitBytecodeStringC(builder, "Foo");
 
     nsEmitBytecode8(builder, 0x40);
     nsEmitBytecodeReg(builder, 10000);
-    nsEmitBytecode32(builder, 0xffeeddcc);
+    nsEmitBytecode64(builder, 0xffeeddcc);
 
     nsEmitBytecode8(builder, 0x40);
     nsEmitBytecodeReg(builder, 127);
-    nsEmitBytecode32(builder, 0x127);
+    nsEmitBytecode64(builder, 0x127);
+
+    nsEmitBytecode8(builder, 0x40);
+    nsEmitBytecodeReg(builder, 12345);
+    nsEmitBytecodeStringC(builder, "Console");
+
+    nsEmitBytecode8(builder, 0x40);
+    nsEmitBytecodeReg(builder, 12345);
+    nsEmitBytecodeStringC(builder, "Console");
+
+    nsEmitBytecode8(builder, 0x40);
+    nsEmitBytecodeReg(builder, 12345);
+    nsEmitBytecodeStringC(builder, "Console");
 
     nsEmitBytecode8(builder, 0x40);
     nsEmitBytecodeReg(builder, 128);
-    nsEmitBytecode32(builder, 0x128);
+    nsEmitBytecode64(builder, 0x128);
 
     nsDumpBytecode(builder);
     nsDestroyBytecodeBuilder(builder);

@@ -7,14 +7,10 @@
 #define NS_TYPE_INT         1
 #define NS_TYPE_FLOAT       2
 #define NS_TYPE_BOOL        3
-#define NS_TYPE_OBJECT      4
-#define NS_TYPE_ARRAY       5
-#define NS_TYPE_FUNCTION    6
-
-/*
- * TODO: Make selectors a type.
- * It would allow interesting things to happen.
- * /
+#define NS_TYPE_STRING      4
+#define NS_TYPE_OBJECT      5
+#define NS_TYPE_ARRAY       6
+#define NS_TYPE_FUNCTION    7
 
 /*
  * If LSB == 1 -> INT
@@ -25,6 +21,7 @@ typedef uint8_t  NsType;
 typedef uint32_t NsObjectId;
 typedef uint32_t NsArrayId;
 typedef uint32_t NsFunctionId;
+typedef uint32_t NsStringId;
 
 inline static NsType nsType(NsValue value)
 {
