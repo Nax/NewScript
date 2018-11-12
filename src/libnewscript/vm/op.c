@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <libnewscript/vm/op.h>
 
-NsValue nsNativeCall(NsVirtualMachine* vm, void* native, uint8_t argCount, NsValue* args);
+NsValue nsNativeCall(NsVirtualMachine* vm, const void* native, uint8_t argCount, NsValue* args);
 
 NS_OP_PROTO2(GGETI)
 {
@@ -24,6 +24,19 @@ NS_OP_PROTO2(LOADI)
     vm->regsWindow[a0.u16] = a1.value;
 }
 
+static void returnFrameNoExit(NsVirtualMachine* vm, NsValue value)
+{
+    vm->regsWindow[0] = value;
+    vm->regsWindow = vm->frames[--vm->frameCounter];
+}
+
+static void returnFrame(NsVirtualMachine* vm, NsValue value)
+{
+    if (vm->frameCounter == 0)
+        longjmp(vm->exitHandler, 1);
+    returnFrameNoExit(vm, value);
+}
+
 NS_OP_PROTO3(CALL)
 {
     uint16_t funcValue = a0.u16;
@@ -37,7 +50,16 @@ NS_OP_PROTO3(CALL)
 
     if (func->flags & NS_FF_NATIVE)
     {
-        nsNativeCall(vm, func->nativeFunction, func->argCount, vm->regsWindow);
+        returnFrameNoExit(vm, nsNativeCall(vm, func->nativeFunction, func->argCount, vm->regsWindow));
     }
-    printf("CALL !\n");
+}
+
+NS_OP_PROTO1(RET)
+{
+    returnFrame(vm, vm->regsWindow[a0.u16]);
+}
+
+NS_OP_PROTO0(RETNIL)
+{
+    returnFrame(vm, 0);
 }

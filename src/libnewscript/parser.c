@@ -138,10 +138,11 @@ static void parseLoop(NsParser* parser)
     for (;;)
     {
         if (acceptImmediate(parser, NS_TOKEN_EOF))
-            return;
+            break;
 
         parseStatement(parser);
     }
+    nsEmitBytecode8(parser->builder, NS_OP_RETNIL);
 }
 
 #include <stdio.h>
@@ -160,13 +161,15 @@ void nsParse(const char* data, size_t len)
     nsDestroyLexer(parser.lexer);
 
     bc = nsExtractBytecode(parser.builder);
+    printf("===  PARSE  ===\n\n");
     nsDumpBytecode(bc);
 
     NsVirtualMachine* vm;
     vm = nsCreateVirtualMachine();
-    printf("\n=== LINK ===\n\n");
+    printf("\n===  LINK   ===\n\n");
     nsVmLinkBytecode(vm, bc);
     nsDumpBytecode(bc);
+    printf("\n===  EXEC   ===\n\n");
     nsExecBytecode(vm, bc);
     nsDestroyVirtualMachine(vm);
     nsDestroyBytecode(bc);

@@ -26,7 +26,6 @@ void nsDumpBytecode(NsBytecode* bc)
     uint64_t tmp64;
     const NsOp* opData;
 
-    printf("Bytecode Dump:\n");
     for (;;)
     {
         if (cursor >= bc->codeSize)

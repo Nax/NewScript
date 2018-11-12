@@ -16,6 +16,8 @@
 #define NS_OP_GGETI     0x44
 #define NS_OP_GETI      0x45
 #define NS_OP_CALL      0x60
+#define NS_OP_RET       0x70
+#define NS_OP_RETNIL    0x71
 
 typedef struct {
     const char*     name;

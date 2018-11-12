@@ -1,6 +1,7 @@
 #ifndef VM_VM_H
 #define VM_VM_H
 
+#include <setjmp.h>
 #include <libnewscript/vm/function.h>
 #include <libnewscript/vm/object.h>
 #include <libnewscript/vm/string.h>
@@ -18,6 +19,7 @@ struct NsVirtualMachine_ {
     NsValue*            frames[1024];
     size_t              frameCounter;
     size_t              ip;
+    jmp_buf             exitHandler;
 };
 
 NsVirtualMachine*   nsCreateVirtualMachine(void);
