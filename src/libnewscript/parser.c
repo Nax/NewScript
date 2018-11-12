@@ -1,5 +1,38 @@
+#include <string.h>
 #include <libnewscript/bytecode/op.h>
 #include <libnewscript/parser.h>
+
+static int allocVar(uint16_t* dst, NsParser* parser, const char* name)
+{
+    NsParserBind* bind = parser->vars->bindings + parser->vars->size++;
+    bind->var = strdup(name);
+    bind->reg = parser->reg++;
+    bind->isConst = 0;
+    *dst = bind->reg;
+    return 1;
+}
+
+static int allocVarFixed(NsParser* parser, const char* name, uint16_t src)
+{
+    NsParserBind* bind = parser->vars->bindings + parser->vars->size++;
+    bind->var = strdup(name);
+    bind->reg = src;
+    bind->isConst = 0;
+    return 1;
+}
+
+static int seekVar(uint16_t* dst, NsParser* parser, const char* name)
+{
+    for (size_t i = 0; i < parser->vars->size; ++i)
+    {
+        if (strcmp(parser->vars->bindings[i].var, name) == 0)
+        {
+            *dst = parser->vars->bindings[i].reg;
+            return 1;
+        }
+    }
+    return 0;
+}
 
 static NsToken* accept(NsParser* parser, NsTokenType type)
 {
@@ -55,6 +88,12 @@ static int parseExprIdentifier(uint16_t* dst, NsParser* parser)
     tok = accept(parser, NS_TOKEN_IDENTIFIER);
     if (!tok)
         return 0;
+    if (seekVar(&reg, parser, tok->str.data))
+    {
+        *dst = reg;
+        nsFreeToken(tok);
+        return 1;
+    }
     reg = parser->reg++;
     nsEmitBytecode8(parser->builder, NS_OP_GGETI);
     nsEmitBytecodeReg(parser->builder, reg);
@@ -125,13 +164,34 @@ static int parseExpr(uint16_t* dst, NsParser* parser)
     return 1;
 }
 
+static int parseVarDecl(NsParser* parser)
+{
+    NsToken* identifier;
+    uint16_t expr;
+
+    if (!acceptImmediate(parser, NS_TOKEN_KLET) && !acceptImmediate(parser, NS_TOKEN_KCONST))
+        return 0;
+    identifier = accept(parser, NS_TOKEN_IDENTIFIER);
+    acceptImmediate(parser, NS_TOKEN_ASSIGN);
+    parseExpr(&expr, parser);
+    allocVarFixed(parser, identifier->str.data, expr);
+    nsFreeToken(identifier);
+    return 1;
+}
+
 static int parseStatement(NsParser* parser)
 {
+    int ret;
     uint16_t dummy;
 
-    parseExpr(&dummy, parser);
+    ret = parseVarDecl(parser);
+    if (!ret)
+        ret = parseExpr(&dummy, parser);
     return acceptImmediate(parser, NS_TOKEN_SEMICOLON);
 }
+
+#include <stdio.h>
+#include <stdlib.h>
 
 static void parseLoop(NsParser* parser)
 {
@@ -140,12 +200,15 @@ static void parseLoop(NsParser* parser)
         if (acceptImmediate(parser, NS_TOKEN_EOF))
             break;
 
-        parseStatement(parser);
+        if (!parseStatement(parser))
+        {
+            printf("Fatal Error\n");
+            exit(1);
+        }
     }
     nsEmitBytecode8(parser->builder, NS_OP_RETNIL);
 }
 
-#include <stdio.h>
 #include <libnewscript/vm/vm.h>
 #include <libnewscript/vm/string.h>
 
@@ -153,10 +216,19 @@ void nsParse(const char* data, size_t len)
 {
     NsBytecode* bc;
     NsParser parser;
+    NsParserVars* vars;
+
     parser.lexer = nsCreateLexer(data, len);
     parser.builder = nsCreateBytecodeBuilder();
     parser.lookahead = NULL;
     parser.reg = 0;
+
+    vars = malloc(sizeof(*vars));
+    vars->size = 0;
+    vars->capacity = 16;
+    vars->bindings = malloc(vars->capacity * sizeof(*vars->bindings));
+    parser.vars = vars;
+
     parseLoop(&parser);
     nsDestroyLexer(parser.lexer);
 
