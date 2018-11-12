@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <libnewscript/vm/vm.h>
+#include <libnewscript/bytecode/bytecode.h>
 
 static NsValue consoleLog(NsVirtualMachine* vm, NsValue str)
 {
@@ -33,4 +34,30 @@ void nsDestroyVirtualMachine(NsVirtualMachine* vm)
     nsVmDeinitObjectTable(&vm->tblObjects);
     nsVmDeinitStringTable(&vm->tblStrings);
     free(vm);
+}
+
+void nsVmLinkBytecode(NsVirtualMachine* vm, NsBytecode* bc)
+{
+    NsValue*        strConstants;
+
+    strConstants = malloc(bc->strTableHeaderSize * sizeof(*strConstants));
+    for (size_t i = 0; i < bc->strTableHeaderSize; ++i)
+        strConstants[i] = nsVmCreateString(vm, bc->strTable + bc->strTableHeader[i].offset, bc->strTableHeader[i].length, 1);
+
+    for (size_t i = 0; i < bc->relTableSize; ++i)
+        *(uint64_t*)(bc->code + bc->relTable[i].offset) = strConstants[bc->relTable[i].index];
+
+    bc->strTableHeaderSize = 0;
+    bc->strTableSize = 0;
+    bc->relTableSize = 0;
+
+    free(bc->strTableHeader);
+    free(bc->strTable);
+    free(bc->relTable);
+
+    bc->strTableHeader = NULL;
+    bc->strTable = NULL;
+    bc->relTable = NULL;
+
+    free(strConstants);
 }

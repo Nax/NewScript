@@ -10,7 +10,7 @@
  * Having STRING_H include guards is a receipe for disaster.
  */
 
-typedef struct _NsVirtualMachine NsVirtualMachine;
+typedef struct NsVirtualMachine_ NsVirtualMachine;
 
 typedef struct {
     size_t      size;

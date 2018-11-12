@@ -1,5 +1,5 @@
-#ifndef BYTECODE_H
-#define BYTECODE_H
+#ifndef BYTECODE_BYTECODE_H
+#define BYTECODE_BYTECODE_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -18,7 +18,8 @@ typedef struct {
     uint8_t     type;
 } NsBytecodeRel;
 
-typedef struct {
+typedef struct NsBytecode_ NsBytecode;
+struct NsBytecode_ {
     size_t              codeSize;
     char*               code;
     size_t              strTableHeaderSize;
@@ -27,7 +28,7 @@ typedef struct {
     char*               strTable;
     size_t              relTableSize;
     NsBytecodeRel*      relTable;
-} NsBytecode;
+};
 
 void    nsDestroyBytecode(NsBytecode* bytecode);
 void    nsDumpBytecode(NsBytecode* bytecode);

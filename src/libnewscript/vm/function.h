@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <libnewscript/vm/value.h>
 
-typedef struct _NsVirtualMachine NsVirtualMachine;
+typedef struct NsVirtualMachine_ NsVirtualMachine;
 
 #define NS_FF_NATIVE    0x01
 #define NS_FF_JITTED    0x02

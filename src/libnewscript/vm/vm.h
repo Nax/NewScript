@@ -5,9 +5,10 @@
 #include <libnewscript/vm/object.h>
 #include <libnewscript/vm/string.h>
 
-typedef struct _NsVirtualMachine NsVirtualMachine;
+typedef struct NsBytecode_ NsBytecode;
+typedef struct NsVirtualMachine_ NsVirtualMachine;
 
-struct _NsVirtualMachine {
+struct NsVirtualMachine_ {
     NsVmFunctionTable   tblFunctions;
     NsVmObjectTable     tblObjects;
     NsVmStringTable     tblStrings;
@@ -16,5 +17,6 @@ struct _NsVirtualMachine {
 
 NsVirtualMachine*   nsCreateVirtualMachine(void);
 void                nsDestroyVirtualMachine(NsVirtualMachine* vm);
+void                nsVmLinkBytecode(NsVirtualMachine* vm, NsBytecode* bc);
 
 #endif
