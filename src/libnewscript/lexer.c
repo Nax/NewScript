@@ -78,20 +78,48 @@ static NsToken* _lexSymbols(NsLexer* lexer)
     MATCH_SYMBOL(",", NS_TOKEN_COMMA);
     MATCH_SYMBOL(":", NS_TOKEN_COLON);
     MATCH_SYMBOL(";", NS_TOKEN_SEMICOLON);
+    MATCH_SYMBOL("=", NS_TOKEN_ASSIGN);
+    return tok;
+}
+
+static NsToken* _matchKeyword(NsLexer* lexer, const char* data, size_t len, NsTokenType type)
+{
+    if (lexer->cursor + len > lexer->length)
+        return NULL;
+
+    if (memcmp(lexer->buffer + lexer->cursor, data, len) == 0
+        && (lexer->cursor + len == lexer->length || (!isalnum(lexer->buffer[lexer->cursor + len]) && lexer->buffer[lexer->cursor + len] != '_')))
+    {
+        lexer->cursor += len;
+        return _tokenBasic(type);
+    }
+
+    return NULL;
+}
+
+#define MATCH_KEYWORD(kw, type) if ((tok = _match(lexer, kw, sizeof(kw) - 1, type))) { return tok; }
+static NsToken* _lexKeywords(NsLexer* lexer)
+{
+    NsToken* tok;
+    MATCH_SYMBOL("const", NS_TOKEN_KCONST);
+    MATCH_SYMBOL("let", NS_TOKEN_KLET);
     return tok;
 }
 
 static NsToken* _lexIdentifiers(NsLexer* lexer)
 {
     NsToken* tok;
+    char c;
 
-    if (!isalpha(lexer->buffer[lexer->cursor]))
+    c = lexer->buffer[lexer->cursor];
+    if (!isalpha(c) && c != '_')
         return NULL;
 
     size_t len = 1;
     while (lexer->cursor + len < lexer->length)
     {
-        if (isalnum(lexer->buffer[lexer->cursor + len]))
+        c = lexer->buffer[lexer->cursor + len];
+        if (isalnum(c) || c == '_')
             len++;
         else
             break;
@@ -139,10 +167,10 @@ NsToken* nsNextToken(NsLexer* lexer)
 
     if ((tok = _lexSymbols(lexer)))
         return tok;
-
+    if ((tok = _lexKeywords(lexer)))
+        return tok;
     if ((tok = _lexIdentifiers(lexer)))
         return tok;
-
     if ((tok = _lexStrings(lexer)))
         return tok;
 
