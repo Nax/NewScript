@@ -1,15 +1,18 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <libnewscript/vm/value.h>
-#include <libnewscript/vm/object.h>
-#include <libnewscript/vm/string.h>
 #include <libnewscript/vm/vm.h>
+
+static NsValue consoleLog(NsValue str)
+{
+    return 0;
+}
 
 NsVirtualMachine* nsCreateVirtualMachine(void)
 {
     NsVirtualMachine* vm;
 
     vm = malloc(sizeof(*vm));
+    nsVmInitFunctionTable(&vm->tblFunctions);
     nsVmInitObjectTable(&vm->tblObjects);
     nsVmInitStringTable(&vm->tblStrings);
 
@@ -22,6 +25,7 @@ NsVirtualMachine* nsCreateVirtualMachine(void)
 
 void nsDestroyVirtualMachine(NsVirtualMachine* vm)
 {
+    nsVmDeinitFunctionTable(&vm->tblFunctions);
     nsVmDeinitObjectTable(&vm->tblObjects);
     nsVmDeinitStringTable(&vm->tblStrings);
     free(vm);
