@@ -31,4 +31,6 @@ void nsVmDeinitStringTable(NsVmStringTable* tbl);
 NsValue nsVmCreateString(NsVirtualMachine* vm, const char* data, size_t length, int intern);
 NsValue nsVmCreateCString(NsVirtualMachine* vm, const char* data, int intern);
 
+const char* nsVmStringData(NsVirtualMachine* vm, NsValue str);
+
 #endif

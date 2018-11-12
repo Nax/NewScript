@@ -138,3 +138,10 @@ NsValue nsVmCreateCString(NsVirtualMachine* vm, const char* data, int intern)
 {
     return nsVmCreateString(vm, data, strlen(data), intern);
 }
+
+const char* nsVmStringData(NsVirtualMachine* vm, NsValue str)
+{
+    NsVmStringTable* tbl = &vm->tblStrings;
+    NsStringId strId = nsValueString(str);
+    return tbl->data[strId];
+}

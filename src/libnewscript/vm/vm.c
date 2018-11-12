@@ -2,8 +2,10 @@
 #include <stdio.h>
 #include <libnewscript/vm/vm.h>
 
-static NsValue consoleLog(NsValue str)
+static NsValue consoleLog(NsVirtualMachine* vm, NsValue str)
 {
+    const char* strData = nsVmStringData(vm, str);
+    puts(strData);
     return 0;
 }
 

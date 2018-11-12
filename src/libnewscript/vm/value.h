@@ -117,6 +117,11 @@ inline static NsFunctionId nsValueFunction(NsValue value)
     return _nsValue(value);
 }
 
+inline static NsStringId nsValueString(NsValue value)
+{
+    return _nsValue(value);
+}
+
 inline static int nsIsNil(NsValue value)
 {
     return value ? 0 : 1;
