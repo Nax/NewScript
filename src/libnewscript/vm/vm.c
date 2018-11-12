@@ -12,6 +12,7 @@ static NsValue consoleLog(NsVirtualMachine* vm, NsValue str)
 NsVirtualMachine* nsCreateVirtualMachine(void)
 {
     NsVirtualMachine* vm;
+    NsValue console;
 
     vm = malloc(sizeof(*vm));
     nsVmInitFunctionTable(&vm->tblFunctions);
@@ -20,8 +21,9 @@ NsVirtualMachine* nsCreateVirtualMachine(void)
 
     vm->global = nsVmCreateObject(vm);
     nsVmSetObjectProperty(vm, vm->global, nsVmCreateCString(vm, "Global", 1), vm->global);
-    printf("Global:    0x%016llx\n", vm->global);
-    printf("Global2:   0x%016llx\n", nsVmGetObjectProperty(vm, vm->global, nsVmCreateCString(vm, "Global", 1)));
+    console = nsVmCreateObject(vm);
+    nsVmSetObjectProperty(vm, console, nsVmCreateCString(vm, "log", 1), nsVmCreateFunctionNative(vm, 1, &consoleLog));
+    nsVmSetObjectProperty(vm, vm->global, nsVmCreateCString(vm, "Console", 1), console);
     return vm;
 }
 
