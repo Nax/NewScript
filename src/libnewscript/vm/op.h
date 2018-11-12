@@ -16,6 +16,7 @@ typedef union {
 #define NS_OP_PROTO2(name)  void nsOp ## name (NsVirtualMachine* vm, NsOpArg a0, NsOpArg a1)
 #define NS_OP_PROTO3(name)  void nsOp ## name (NsVirtualMachine* vm, NsOpArg a0, NsOpArg a1, NsOpArg a2)
 
+NS_OP_PROTO2(MOV);
 NS_OP_PROTO2(GGETI);
 NS_OP_PROTO3(GETI);
 NS_OP_PROTO2(LOADI);

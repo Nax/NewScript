@@ -9,6 +9,11 @@
 typedef struct NsBytecode_ NsBytecode;
 typedef struct NsVirtualMachine_ NsVirtualMachine;
 
+typedef struct {
+    NsValue*    ptr;
+    size_t      regCount;
+} NsVmFrame;
+
 struct NsVirtualMachine_ {
     NsVmFunctionTable   tblFunctions;
     NsVmObjectTable     tblObjects;
@@ -16,9 +21,10 @@ struct NsVirtualMachine_ {
     NsValue             global;
     NsValue*            regs;
     NsValue*            regsWindow;
-    NsValue*            frames[1024];
+    NsVmFrame           frames[1024];
     size_t              frameCounter;
     size_t              ip;
+    size_t              regCount;
     jmp_buf             exitHandler;
 };
 

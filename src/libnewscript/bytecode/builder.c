@@ -23,6 +23,7 @@ NsBytecodeBuilder* nsCreateBytecodeBuilder(void)
     bc->strTable = malloc(builder->strTableCapacity);
     bc->relTableSize = 0;
     bc->relTable = malloc(sizeof(*bc->relTable) * builder->relTableCapacity);
+    bc->regCount = 0;
     return builder;
 }
 
@@ -56,6 +57,7 @@ static void appendBytecode(NsBytecodeBuilder* builder, void* data, size_t length
     {
         size_t newCapacity = builder->codeCapacity + builder->codeCapacity / 2;
         builder->bc->code = realloc(builder->bc->code, newCapacity);
+        builder->codeCapacity = newCapacity;
     }
     memcpy(builder->bc->code + builder->bc->codeSize, data, length);
     builder->bc->codeSize += length;
@@ -102,7 +104,7 @@ void nsEmitBytecodeString(NsBytecodeBuilder* builder, const char* str, size_t le
     if (builder->bc->relTableSize == builder->relTableCapacity)
     {
         newCapacity = builder->relTableCapacity + builder->relTableCapacity / 2;
-        builder->bc->relTable = realloc(builder->bc->relTable, builder->relTableCapacity);
+        builder->bc->relTable = realloc(builder->bc->relTable, newCapacity * sizeof(*builder->bc->relTable));
         builder->relTableCapacity = newCapacity;
     }
     relIndex = builder->bc->relTableSize;

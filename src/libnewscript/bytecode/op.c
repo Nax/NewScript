@@ -33,7 +33,7 @@ const NsOp nsOps[256] = {
     { "UNDEF(1d)", 0, { NS_ENC_NONE, NS_ENC_NONE, NS_ENC_NONE } },
     { "UNDEF(1e)", 0, { NS_ENC_NONE, NS_ENC_NONE, NS_ENC_NONE } },
     { "UNDEF(1f)", 0, { NS_ENC_NONE, NS_ENC_NONE, NS_ENC_NONE } },
-    { "UNDEF(20)", 0, { NS_ENC_NONE, NS_ENC_NONE, NS_ENC_NONE } },
+    { "MOV", 2, { NS_ENC_REG, NS_ENC_REG, NS_ENC_NONE } },
     { "UNDEF(21)", 0, { NS_ENC_NONE, NS_ENC_NONE, NS_ENC_NONE } },
     { "LOADI", 2, { NS_ENC_REG, NS_ENC_IMM64, NS_ENC_NONE } },
     { "UNDEF(23)", 0, { NS_ENC_NONE, NS_ENC_NONE, NS_ENC_NONE } },

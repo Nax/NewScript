@@ -28,6 +28,7 @@ struct NsBytecode_ {
     char*               strTable;
     size_t              relTableSize;
     NsBytecodeRel*      relTable;
+    size_t              regCount;
 };
 
 void    nsDestroyBytecode(NsBytecode* bytecode);

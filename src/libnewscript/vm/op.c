@@ -1,7 +1,13 @@
 #include <stdio.h>
+#include <string.h>
 #include <libnewscript/vm/op.h>
 
 NsValue nsNativeCall(NsVirtualMachine* vm, const void* native, uint8_t argCount, NsValue* args);
+
+NS_OP_PROTO2(MOV)
+{
+    vm->regsWindow[a0.u16] = vm->regsWindow[a1.u16];
+}
 
 NS_OP_PROTO2(GGETI)
 {
@@ -26,8 +32,12 @@ NS_OP_PROTO2(LOADI)
 
 static void returnFrameNoExit(NsVirtualMachine* vm, NsValue value)
 {
+    NsVmFrame* frame;
+
+    frame = vm->frames + --vm->frameCounter;
+    vm->regsWindow = frame->ptr;
+    vm->regCount = frame->regCount;
     vm->regsWindow[0] = value;
-    vm->regsWindow = vm->frames[--vm->frameCounter];
 }
 
 static void returnFrame(NsVirtualMachine* vm, NsValue value)
@@ -42,14 +52,21 @@ NS_OP_PROTO3(CALL)
     uint16_t funcValue = a0.u16;
     uint16_t rbase = a1.u16;
     uint8_t argCount = a2.u8;
+    NsValue* oldWindow;
     const NsFunction* func;
+    NsVmFrame* frame;
 
     func = nsVmGetFunction(vm, vm->regsWindow[funcValue]);
-    vm->frames[vm->frameCounter++] = vm->regsWindow;
-    vm->regsWindow += rbase;
+    frame = vm->frames + vm->frameCounter++;
+    frame->ptr = vm->regsWindow;
+    frame->regCount = vm->regCount;
+    oldWindow = vm->regsWindow;
+    vm->regsWindow += vm->regCount;
+    memcpy(vm->regsWindow, oldWindow + rbase, argCount * sizeof(NsValue));
 
     if (func->flags & NS_FF_NATIVE)
     {
+        vm->regCount = 0;
         returnFrameNoExit(vm, nsNativeCall(vm, func->nativeFunction, func->argCount, vm->regsWindow));
     }
 }

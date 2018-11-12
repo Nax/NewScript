@@ -149,13 +149,11 @@ static int parseExpr(uint16_t* dst, NsParser* parser)
                 }
             }
             acceptImmediate(parser, NS_TOKEN_RPAREN);
-            if (argCount == 0)
-                args[0] = parser->reg++;
             nsEmitBytecode8(parser->builder, NS_OP_CALL);
             nsEmitBytecodeReg(parser->builder, reg);
             nsEmitBytecodeReg(parser->builder, args[0]);
             nsEmitBytecode8(parser->builder, argCount);
-            reg = args[0];
+            reg = 0;
         }
         else
             break;
@@ -207,6 +205,7 @@ static void parseLoop(NsParser* parser)
         }
     }
     nsEmitBytecode8(parser->builder, NS_OP_RETNIL);
+    parser->builder->bc->regCount = parser->reg;
 }
 
 #include <libnewscript/vm/vm.h>
@@ -221,7 +220,7 @@ void nsParse(const char* data, size_t len)
     parser.lexer = nsCreateLexer(data, len);
     parser.builder = nsCreateBytecodeBuilder();
     parser.lookahead = NULL;
-    parser.reg = 0;
+    parser.reg = 1;
 
     vars = malloc(sizeof(*vars));
     vars->size = 0;
