@@ -144,6 +144,10 @@ static void parseLoop(NsParser* parser)
     }
 }
 
+#include <stdio.h>
+#include <libnewscript/vm/vm.h>
+#include <libnewscript/vm/string.h>
+
 void nsParse(const char* data, size_t len)
 {
     NsBytecode* bc;
@@ -158,4 +162,13 @@ void nsParse(const char* data, size_t len)
     bc = nsExtractBytecode(parser.builder);
     nsDumpBytecode(bc);
     nsDestroyBytecode(bc);
+
+    NsVirtualMachine* vm;
+    vm = nsCreateVirtualMachine();
+    printf("Console:    0x%016llx\n", nsVmCreateCString(vm, "Console", 1));
+    printf("Console2:   0x%016llx\n", nsVmCreateCString(vm, "Console", 1));
+    printf("Console3:   0x%016llx\n", nsVmCreateCString(vm, "Console", 0));
+    printf("log:        0x%016llx\n", nsVmCreateCString(vm, "log", 0));
+    printf("log2:       0x%016llx\n", nsVmCreateCString(vm, "log", 0));
+    nsDestroyVirtualMachine(vm);
 }

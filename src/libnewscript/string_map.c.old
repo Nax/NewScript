@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-#include <libnewscript/hash.h>
+#include <libnewscript/string_map.h>
 
 static uint64_t nsHashString(const char* str)
 {

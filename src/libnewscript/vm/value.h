@@ -70,6 +70,11 @@ inline static NsValue nsMakeFunction(NsFunctionId fun)
     return _nsMakeValue(NS_TYPE_FUNCTION, fun);
 }
 
+inline static NsValue nsMakeString(NsStringId str)
+{
+    return _nsMakeValue(NS_TYPE_STRING, str);
+}
+
 /*
  * Do not use directly, use the helper functions instead.
  * Does not support small integers.
@@ -82,7 +87,7 @@ inline static uint64_t _nsValue(NsValue value)
 inline static int64_t nsValueInt(NsValue value)
 {
     uint64_t v = value >> 1;
-    v = v | ((v & (1 << 62)) << 1);
+    v = v | ((v & (1ull << 62)) << 1);
     return v;
 }
 
