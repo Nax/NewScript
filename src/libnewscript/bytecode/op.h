@@ -19,6 +19,7 @@
 
 typedef struct {
     const char*     name;
+    uint8_t         encCount;
     uint8_t         enc[3];
 } NsOp;
 

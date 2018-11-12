@@ -167,6 +167,7 @@ void nsParse(const char* data, size_t len)
     printf("\n=== LINK ===\n\n");
     nsVmLinkBytecode(vm, bc);
     nsDumpBytecode(bc);
+    nsExecBytecode(vm, bc);
     nsDestroyVirtualMachine(vm);
     nsDestroyBytecode(bc);
 }

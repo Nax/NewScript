@@ -41,3 +41,12 @@ NsValue nsVmCreateFunctionNative(NsVirtualMachine* vm, uint8_t argCount, const v
 
     return nsMakeFunction(funcId);
 }
+
+const NsFunction* nsVmGetFunction(NsVirtualMachine* vm, NsValue value)
+{
+    NsVmFunctionTable* tbl = &vm->tblFunctions;
+    NsFunctionId funcId = nsValueFunction(value);
+    const NsFunction* func = tbl->functions + funcId;
+
+    return func;
+}

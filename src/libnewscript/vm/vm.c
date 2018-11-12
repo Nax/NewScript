@@ -19,6 +19,10 @@ NsVirtualMachine* nsCreateVirtualMachine(void)
     nsVmInitFunctionTable(&vm->tblFunctions);
     nsVmInitObjectTable(&vm->tblObjects);
     nsVmInitStringTable(&vm->tblStrings);
+    vm->regs = calloc(1000000, sizeof(*vm->regs));
+    vm->regsWindow = vm->regs;
+    vm->ip = 0;
+    vm->frameCounter = 0;
 
     vm->global = nsVmCreateObject(vm);
     nsVmSetObjectProperty(vm, vm->global, nsVmCreateCString(vm, "Global", 1), vm->global);
@@ -33,12 +37,13 @@ void nsDestroyVirtualMachine(NsVirtualMachine* vm)
     nsVmDeinitFunctionTable(&vm->tblFunctions);
     nsVmDeinitObjectTable(&vm->tblObjects);
     nsVmDeinitStringTable(&vm->tblStrings);
+    free(vm->regs);
     free(vm);
 }
 
 void nsVmLinkBytecode(NsVirtualMachine* vm, NsBytecode* bc)
 {
-    NsValue*        strConstants;
+    NsValue* strConstants;
 
     strConstants = malloc(bc->strTableHeaderSize * sizeof(*strConstants));
     for (size_t i = 0; i < bc->strTableHeaderSize; ++i)

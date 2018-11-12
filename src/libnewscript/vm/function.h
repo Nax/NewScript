@@ -25,6 +25,7 @@ typedef struct {
 void nsVmInitFunctionTable(NsVmFunctionTable* tbl);
 void nsVmDeinitFunctionTable(NsVmFunctionTable* tbl);
 
-NsValue nsVmCreateFunctionNative(NsVirtualMachine* vm, uint8_t argCount, const void* funcPtr);
+NsValue             nsVmCreateFunctionNative(NsVirtualMachine* vm, uint8_t argCount, const void* funcPtr);
+const NsFunction*   nsVmGetFunction(NsVirtualMachine* vm, NsValue value);
 
 #endif
