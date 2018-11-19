@@ -1,6 +1,7 @@
 #include <string.h>
 #include <libnewscript/bytecode/op.h>
 #include <libnewscript/parser.h>
+#include <libnewscript/thread.h>
 
 static int allocVar(uint16_t* dst, NsParser* parser, const char* name)
 {
@@ -216,6 +217,7 @@ void nsParse(const char* data, size_t len)
     NsBytecode* bc;
     NsParser parser;
     NsParserVars* vars;
+    void* thread;
 
     parser.lexer = nsCreateLexer(data, len);
     parser.builder = nsCreateBytecodeBuilder();
@@ -241,7 +243,8 @@ void nsParse(const char* data, size_t len)
     nsVmLinkBytecode(vm, bc);
     nsDumpBytecode(bc);
     printf("\n===  EXEC   ===\n\n");
-    nsExecBytecode(vm, bc);
+    thread = nsThreadBuild(vm, bc);
+    nsRunThread(vm, thread);
     nsDestroyVirtualMachine(vm);
     nsDestroyBytecode(bc);
 }

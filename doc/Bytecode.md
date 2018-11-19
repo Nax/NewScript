@@ -1,22 +1,5 @@
 # NewScript Bytecode
 
-## Packed Integer
-
-Whether the integer is signed or not is irrelevant, as the packing only concern itself with bits.
-
-### RegPack
-
-+---+---------+
-| 0 | xxxxxxx |
-+---+---------+
-
-or
-
-+---+---------+----------+
-| 1 | xxxxxxx | xxxxxxxx |
-+---+---------+----------+
-
-Up to 15 bits of effective storage (32768 registers).
 
 ## Encoding
 
