@@ -10,11 +10,18 @@ jmp rax
 
 ; RDI = State
 ; RSI = Thread
+; R15 = Register File
 _nsRunThread:
+  mov r15, [rdi + 1 * 8]
   mov rbx, rdi
   NEXT
 
 opLOADI:
+  movzx cx, [rsi]
+  mov rdx, [rsi + 8]
+  add rsi, 16
+
+  mov [r15 + rcx * 8], rdx
   NEXT
 
 opGGET:

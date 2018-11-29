@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <libnewscript/thread.h>
+#include <libnewscript/bytecode/op.h>
 
 typedef struct {
     uint32_t            cursor;
@@ -105,12 +106,22 @@ void* nsThreadBuild(NsVirtualMachine* vm, NsBytecode* bc)
 
     for (;;)
     {
-        if (i >= bc->codeSize)
+        if (reader.cursor >= reader.bc->codeSize)
             break;
 
-        op = bc->code[i++];
+        op = readBytecode8(&reader);
         writeThread64(&builder, kNsThreadTable[op]);
-        printf("THREAD_OP: 0x%016llx\n", kNsThreadTable[op]);
+        switch (op)
+        {
+        default:
+            break;
+        case NS_OP_LOADI:
+            writeThread16(&builder, readBytecodeReg(&reader));
+            writeThread16(&builder, 0);
+            writeThread32(&builder, 0);
+            writeThread64(&builder, readBytecode64(&reader));
+            break;
+        }
     }
 
     return realloc(builder.data, builder.size);

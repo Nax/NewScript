@@ -15,12 +15,12 @@ typedef struct {
 } NsVmFrame;
 
 struct NsVirtualMachine_ {
-    NsVmFunctionTable   tblFunctions;
-    NsVmObjectTable     tblObjects;
-    NsVmStringTable     tblStrings;
     NsValue             global;
     NsValue*            regs;
     NsValue*            regsWindow;
+    NsVmFunctionTable   tblFunctions;
+    NsVmObjectTable     tblObjects;
+    NsVmStringTable     tblStrings;
     NsVmFrame           frames[1024];
     size_t              frameCounter;
     size_t              ip;
