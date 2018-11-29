@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(NewScript C ASM)
+project(NewScript C ASM_NASM)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")

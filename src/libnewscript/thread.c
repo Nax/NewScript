@@ -16,7 +16,7 @@ static void writeThreadData(NsThreadBuilder* builder, const void* data, size_t l
         builder->capacity = newCapacity;
     }
 
-    memcpy((char*)(builder->data) + length, data, length);
+    memcpy((char*)(builder->data) + builder->size, data, length);
     builder->size += length;
 }
 
@@ -58,6 +58,7 @@ void* nsThreadBuild(NsVirtualMachine* vm, NsBytecode* bc)
 
         op = bc->code[i++];
         writeThread64(&builder, kNsThreadTable[op]);
+        printf("THREAD_OP: 0x%016llx\n", kNsThreadTable[op]);
     }
 
     return realloc(builder.data, builder.size);
