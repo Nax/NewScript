@@ -4,7 +4,7 @@
 
 void nsVmInitFunctionTable(NsVmFunctionTable* tbl)
 {
-    tbl->size = 0;
+    tbl->size = 1;
     tbl->capacity = 16;
     tbl->functions = malloc(tbl->capacity * sizeof(*tbl->functions));
 }

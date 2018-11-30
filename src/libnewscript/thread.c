@@ -121,6 +121,27 @@ void* nsThreadBuild(NsVirtualMachine* vm, NsBytecode* bc)
             writeThread32(&builder, 0);
             writeThread64(&builder, readBytecode64(&reader));
             break;
+        case NS_OP_GGETI:
+            writeThread16(&builder, readBytecodeReg(&reader));
+            writeThread16(&builder, 0);
+            writeThread32(&builder, 0);
+            writeThread64(&builder, readBytecode64(&reader));
+            break;
+        case NS_OP_GETI:
+            writeThread16(&builder, readBytecodeReg(&reader));
+            writeThread16(&builder, readBytecodeReg(&reader));
+            writeThread32(&builder, 0);
+            writeThread64(&builder, readBytecode64(&reader));
+            break;
+        case NS_OP_CALL:
+            writeThread16(&builder, readBytecodeReg(&reader));
+            writeThread16(&builder, readBytecodeReg(&reader));
+            writeThread8(&builder, readBytecode8(&reader));
+            writeThread8(&builder, 0);
+            writeThread16(&builder, 0);
+            break;
+        case NS_OP_RETNIL:
+            break;
         }
     }
 
