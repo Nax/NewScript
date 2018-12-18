@@ -97,7 +97,7 @@ const NsOp nsOps[256] = {
     { "UNDEF(5d)", 0, { NS_ENC_NONE, NS_ENC_NONE, NS_ENC_NONE } },
     { "UNDEF(5e)", 0, { NS_ENC_NONE, NS_ENC_NONE, NS_ENC_NONE } },
     { "UNDEF(5f)", 0, { NS_ENC_NONE, NS_ENC_NONE, NS_ENC_NONE } },
-    { "CALL", 3, { NS_ENC_REG, NS_ENC_REG, NS_ENC_IMM8 } },
+    { "CALL", 3, { NS_ENC_REG, NS_ENC_REG, NS_ENC_CALLARGS } },
     { "UNDEF(61)", 0, { NS_ENC_NONE, NS_ENC_NONE, NS_ENC_NONE } },
     { "UNDEF(62)", 0, { NS_ENC_NONE, NS_ENC_NONE, NS_ENC_NONE } },
     { "UNDEF(63)", 0, { NS_ENC_NONE, NS_ENC_NONE, NS_ENC_NONE } },

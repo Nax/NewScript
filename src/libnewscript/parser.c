@@ -152,8 +152,10 @@ static int parseExpr(uint16_t* dst, NsParser* parser)
             acceptImmediate(parser, NS_TOKEN_RPAREN);
             nsEmitBytecode8(parser->builder, NS_OP_CALL);
             nsEmitBytecodeReg(parser->builder, reg);
-            nsEmitBytecodeReg(parser->builder, args[0]);
+            nsEmitBytecodeReg(parser->builder, 0);
             nsEmitBytecode8(parser->builder, argCount);
+            for (size_t i = 0; i < argCount; ++i)
+                nsEmitBytecodeReg(parser->builder, args[i]);
             reg = 0;
         }
         else

@@ -9,6 +9,7 @@
 #define NS_ENC_IMM32    3
 #define NS_ENC_IMM64    4
 #define NS_ENC_REG      5
+#define NS_ENC_CALLARGS 6
 
 #define NS_OP_MOV       0x20
 #define NS_OP_LOADI     0x22

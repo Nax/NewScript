@@ -89,6 +89,23 @@ void nsDumpBytecode(NsBytecode* bc)
                 }
                 printf("r%u", tmp16);
                 break;
+            case NS_ENC_CALLARGS:
+                tmp8 = *(uint8_t*)(bc->code + cursor++);
+                putchar('(');
+                for (uint8_t i = 0; i < tmp8; ++i)
+                {
+                    tmp16 = *(uint8_t*)(bc->code + cursor++);
+                    if (tmp16 & 0x80)
+                    {
+                        tmp16 &= 0x7f;
+                        tmp16 |= ((*(uint8_t*)(bc->code + cursor++)) << 7);
+                    }
+                    printf("r%d", tmp16);
+                    if (i + 1 < tmp8)
+                        printf(", ");
+                }
+                putchar(')');
+                break;
             }
         }
         printf("\n");

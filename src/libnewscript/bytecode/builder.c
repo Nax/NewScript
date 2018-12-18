@@ -85,6 +85,9 @@ void nsEmitBytecode64(NsBytecodeBuilder* builder, uint64_t value)
 
 void nsEmitBytecodeReg(NsBytecodeBuilder* builder, uint16_t value)
 {
+    if (value > builder->bc->regCount)
+        builder->bc->regCount = value;
+
     if (value < 128)
         nsEmitBytecode8(builder, value);
     else
