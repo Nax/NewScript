@@ -1,2 +1,7 @@
-const a = "Hello, World!";
-Console.log(a);
+const hello = "Hello, world!";
+Console.log(hello);
+
+Console.log("Test 2");
+Console.log("Test 3");
+Console.log("Test 4");
+Console.log("Test 5");
