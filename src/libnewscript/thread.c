@@ -96,6 +96,8 @@ void* nsThreadBuild(NsVirtualMachine* vm, NsBytecode* bc)
     NsBytecodeReader    reader;
     NsThreadBuilder     builder;
     uint8_t op;
+    size_t argCount;
+    size_t padding;
 
     reader.bc = bc;
     reader.cursor = 0;
@@ -136,9 +138,14 @@ void* nsThreadBuild(NsVirtualMachine* vm, NsBytecode* bc)
         case NS_OP_CALL:
             writeThread16(&builder, readBytecodeReg(&reader));
             writeThread16(&builder, readBytecodeReg(&reader));
-            writeThread8(&builder, readBytecode8(&reader));
+            argCount = readBytecode8(&reader);
+            writeThread8(&builder, argCount);
             writeThread8(&builder, 0);
-            writeThread16(&builder, 0);
+            for (size_t i = 0; i < argCount; ++i)
+                writeThread16(&builder, readBytecodeReg(&reader));
+            padding = (4 - ((argCount + 3) % 4)) % 4;
+            for (size_t i = 0; i < padding; ++i)
+                writeThread16(&builder, 0);
             break;
         case NS_OP_RETNIL:
             break;

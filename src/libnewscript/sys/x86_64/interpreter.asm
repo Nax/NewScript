@@ -13,7 +13,7 @@ lodsq
 jmp rax
 %endmacro
 
-%define STACK_SIZE  0x40
+%define STACK_SIZE  0x58
 
 ; RDI = State
 ; RSI = Thread
@@ -21,12 +21,12 @@ jmp rax
 ; R15 = Register File
 _nsRunThread:
   sub rsp, STACK_SIZE
-  mov [rsp + (STACK_SIZE - 0x28)], rbx
-  mov [rsp + (STACK_SIZE - 0x20)], rbp
-  mov [rsp + (STACK_SIZE - 0x18)], r12
-  mov [rsp + (STACK_SIZE - 0x10)], r13
-  mov [rsp + (STACK_SIZE - 0x08)], r14
-  mov [rsp + (STACK_SIZE - 0x00)], r15
+  mov [rsp + (STACK_SIZE - 0x30)], rbx
+  mov [rsp + (STACK_SIZE - 0x28)], rbp
+  mov [rsp + (STACK_SIZE - 0x20)], r12
+  mov [rsp + (STACK_SIZE - 0x18)], r13
+  mov [rsp + (STACK_SIZE - 0x10)], r14
+  mov [rsp + (STACK_SIZE - 0x08)], r15
 
   mov r14, [rdi + 0 * 8]
   mov r15, [rdi + 1 * 8]
@@ -72,28 +72,88 @@ opCALL:
   movzx r13, WORD [rsi + 2]
   movzx rbp, BYTE [rsi + 4]
 
+  push rdi
+  push rsi
+
+  mov rsi, [r15 + 8 * r12]
+  call _nsVmGetFunction
+  mov r12, [rax]
+
+  pop rsi
+  pop rdi
+
+  mov  rax, rsi
+  push rsi
+  push rdi
+
+  cmp rbp, 5
+  ja call6p
+  lea r11, [REL CallJmpTable]
+  jmp [r11 + rbp * 8]
+
+call6p:
+  jmp callNative
+
+call5:
+  movzx r9, WORD [rax + 0xe]
+  mov r9, QWORD [r15 + 8 * r9]
+call4:
+  movzx r8, WORD [rax + 0xc]
+  mov r8, QWORD [r15 + 8 * r8]
+call3:
+  movzx rcx, WORD [rax + 0xa]
+  mov rcx, QWORD [r15 + 8 * rcx]
+call2:
+  movzx rdx, WORD [rax + 0x8]
+  mov rdx, QWORD [r15 + 8 * rdx]
+call1:
+  movzx rsi, WORD [rax + 0x6]
+  mov rsi, QWORD [r15 + 8 * rsi]
+
+callNative:
+  call r12
+
+  pop rdi
+  pop rsi
+
+  ; Deal with thread alignment
+  lea rbp, [rbp * 2 + 5]
+  add rsi, rbp
+  or rsi, 0x7
+  add rsi, 1
+
   NEXT
 
 opRET:
   NEXT
 
 opRETNIL:
+  jmp yieldVM
   NEXT
 
 unwind:
 
 
 yieldVM:
-  mov rbx, [rsp + (STACK_SIZE - 0x28)]
-  mov rbp, [rsp + (STACK_SIZE - 0x20)]
-  mov r12, [rsp + (STACK_SIZE - 0x18)]
-  mov r13, [rsp + (STACK_SIZE - 0x10)]
-  mov r14, [rsp + (STACK_SIZE - 0x08)]
-  mov r15, [rsp + (STACK_SIZE - 0x00)]
+  mov rbx, [rsp + (STACK_SIZE - 0x30)]
+  mov rbp, [rsp + (STACK_SIZE - 0x28)]
+  mov r12, [rsp + (STACK_SIZE - 0x20)]
+  mov r13, [rsp + (STACK_SIZE - 0x18)]
+  mov r14, [rsp + (STACK_SIZE - 0x10)]
+  mov r15, [rsp + (STACK_SIZE - 0x08)]
   add rsp, STACK_SIZE
   ret
 
 SECTION .rodata
+ALIGN 16
+CallJmpTable:
+  dq callNative
+  dq call1
+  dq call2
+  dq call3
+  dq call4
+  dq call5
+
 ALIGN 16
 _kNsThreadTable:
   dq 0, 0, 0, 0, 0, 0, 0, 0
