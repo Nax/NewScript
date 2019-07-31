@@ -1,4 +1,6 @@
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <libnewscript/bytecode/op.h>
 #include <libnewscript/parser.h>
 
@@ -187,9 +189,6 @@ static int parseStatement(NsParser* parser)
         ret = parseExpr(&dummy, parser);
     return acceptImmediate(parser, NS_TOKEN_SEMICOLON);
 }
-
-#include <stdio.h>
-#include <stdlib.h>
 
 static void parseLoop(NsParser* parser)
 {

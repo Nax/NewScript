@@ -1,2 +1,10 @@
 const a = "Hello, World!";
+const b = "Foo";
+const c = 1;
+
 Console.log(a);
+Console.log(a);
+Console.log(a);
+Console.log(b);
+Console.log(a);
+Console.log(c);
